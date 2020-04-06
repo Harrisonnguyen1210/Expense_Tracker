@@ -18,20 +18,23 @@ class TransactionList extends StatelessWidget {
                   padding: EdgeInsets.all(10),
                   margin: EdgeInsets.all(20),
                   decoration: BoxDecoration(
-                      border: Border.all(color: Colors.purple, width: 2)),
+                    border: Border.all(
+                      color: Theme.of(context).primaryColor,
+                      width: 2,
+                    ),
+                  ),
                   child: Text(
                     '${transactions[index].amount.toStringAsFixed(2)}\$',
-                    style: TextStyle(color: Colors.purple),
+                    style: TextStyle(
+                      color: Theme.of(context).primaryColor,
+                    ),
                   ),
                 ),
                 Column(
                   children: <Widget>[
                     Text(
                       transactions[index].title,
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 20,
-                          color: Colors.purple),
+                      style: Theme.of(context).textTheme.title,
                     ),
                     Text(
                       DateFormat('yyyy-MM-dd').format(transactions[index].date),
