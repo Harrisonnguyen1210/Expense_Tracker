@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import '../models/transaction.dart';
 import 'package:intl/intl.dart';
+import '../models/transaction.dart';
+import 'chart_bar.dart';
 
 class Chart extends StatelessWidget {
   final List<Transaction> recentTransactions;
@@ -15,22 +16,45 @@ class Chart extends StatelessWidget {
         if (recentTransactions[i].date.day == weekDay.day &&
             recentTransactions[i].date.month == weekDay.month &&
             recentTransactions[i].date.year == weekDay.year) {
-              totalSum += recentTransactions[i].amount;
-            }
+          totalSum += recentTransactions[i].amount;
+        }
       }
-      return {'day': DateFormat.E().format(weekDay).substring(0, 2), 'amount': totalSum.toStringAsFixed(2)};
-    });
+      return {
+        'day': DateFormat.E().format(weekDay).substring(0, 2),
+        'amount': totalSum
+      };
+    }).reversed.toList();
+  }
+
+  double get maxSpending {
+    return groupedTransactionValues.fold(
+        0.0, (sum, item) => (sum + item['amount']));
   }
 
   @override
   Widget build(BuildContext context) {
-
-    print(groupedTransactionValues);
     return Card(
       elevation: 6,
       margin: EdgeInsets.all(20),
-      child: Row(
-        children: groupedTransactionValues.map((transaction) => Text('${transaction['day']} : ${transaction['amount']}')).toList(),
+      child: Padding(
+        padding: EdgeInsets.all(8),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: groupedTransactionValues
+              .map(
+                (transaction) => Flexible(
+                  fit: FlexFit.tight,
+                  child: ChartBar(
+                    transaction['day'],
+                    transaction['amount'],
+                    maxSpending == 0.0
+                        ? 0.0
+                        : (transaction['amount'] as double) / maxSpending,
+                  ),
+                ),
+              )
+              .toList(),
+        ),
       ),
     );
   }
