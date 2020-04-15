@@ -18,8 +18,11 @@ class _TransactionInputState extends State<TransactionInput> {
   void _addTransaction() {
     final title = _titleEditingController.text;
     final amount = double.tryParse(_amountEditingController.text);
-    if (title.isNotEmpty && amount != null && amount >= 0) {
-      widget._addNewTransaction(title, amount);
+    if (title.isNotEmpty &&
+        amount != null &&
+        amount >= 0 &&
+        _selectedDate != null) {
+      widget._addNewTransaction(title, amount, _selectedDate);
     }
   }
 
