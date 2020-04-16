@@ -1,8 +1,16 @@
 import 'package:flutter/material.dart';
+// import 'package:flutter/services.dart';
 import 'widgets/transaction_list.dart';
 import 'widgets/transaction_input.dart';
 import 'models/transaction.dart';
 import 'widgets/chart.dart';
+
+// Force device to have desired orientation:
+// void main() {
+//   WidgetsFlutterBinding.ensureInitialized();
+//   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+//   runApp(new MyApp());
+// }
 
 void main() => runApp(MyApp());
 
@@ -43,6 +51,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   final List<Transaction> _transactions = [];
+  bool _showChart = false;
 
   List<Transaction> get _recentTransactions {
     return _transactions.where((transaction) {
@@ -80,29 +89,73 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
+  void _toggleChart(bool isSwitched) {
+    setState(() {
+      _showChart = isSwitched;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          'Expense Tracker',
-          style: TextStyle(
-            fontFamily: 'Quicksand',
-          ),
+    final _isLandscape =
+        MediaQuery.of(context).orientation == Orientation.landscape;
+    final appBar = AppBar(
+      title: Text(
+        'Expense Tracker',
+        style: TextStyle(
+          fontFamily: 'Quicksand',
         ),
-        actions: <Widget>[
-          IconButton(
-            icon: Icon(Icons.add),
-            onPressed: () => _startAddNewTransaction(context),
-          ),
+      ),
+      actions: <Widget>[
+        IconButton(
+          icon: Icon(Icons.add),
+          onPressed: () => _startAddNewTransaction(context),
+        ),
+      ],
+    );
+    final _transactionListContainer = Container(
+      height: (MediaQuery.of(context).size.height -
+              appBar.preferredSize.height -
+              MediaQuery.of(context).padding.top) *
+          0.75,
+      child: TransactionList(_transactions, _deleteTransaction),
+    );
+    final List<Widget> portraitTree = [
+      Container(
+        height: (MediaQuery.of(context).size.height -
+                appBar.preferredSize.height -
+                MediaQuery.of(context).padding.top) *
+            0.25,
+        child: Chart(_recentTransactions),
+      ),
+      _transactionListContainer
+    ];
+    final List<Widget> landscapeTree = [
+      Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          Text('Show chart'),
+          Switch(value: _showChart, onChanged: (value) => _toggleChart(value)),
         ],
       ),
+      _showChart
+          ? Container(
+              height: (MediaQuery.of(context).size.height -
+                      appBar.preferredSize.height -
+                      MediaQuery.of(context).padding.top) *
+                  0.75,
+              child: Chart(_recentTransactions),
+            )
+          : _transactionListContainer
+    ];
+
+    return Scaffold(
+      appBar: appBar,
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
-            Chart(_recentTransactions),
-            TransactionList(_transactions, _deleteTransaction),
+            if (_isLandscape) ...landscapeTree else ...portraitTree
           ],
         ),
       ),
