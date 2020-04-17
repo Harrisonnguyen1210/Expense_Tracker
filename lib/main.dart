@@ -63,6 +63,7 @@ class _MyHomePageState extends State<MyHomePage> {
   void _startAddNewTransaction(BuildContext context) {
     showModalBottomSheet(
       context: context,
+      isScrollControlled: true,
       builder: (builderContext) {
         return TransactionInput(_addNewTransaction);
       },
