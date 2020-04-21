@@ -99,11 +99,8 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
-  @override
-  Widget build(BuildContext context) {
-    final mediaQuery = MediaQuery.of(context);
-    final _isLandscape = mediaQuery.orientation == Orientation.landscape;
-    final PreferredSizeWidget _appBar = Platform.isIOS
+  Widget _buildAppBar() {
+    return Platform.isIOS
         ? CupertinoNavigationBar(
             middle: Text('Expense Tracker'),
             trailing: Row(
@@ -129,6 +126,13 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
             ],
           );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final mediaQuery = MediaQuery.of(context);
+    final _isLandscape = mediaQuery.orientation == Orientation.landscape;
+    final PreferredSizeWidget _appBar = _buildAppBar();
     final _transactionListContainer = Container(
       height: (mediaQuery.size.height -
               _appBar.preferredSize.height -
